@@ -1,14 +1,20 @@
-import NostrLogin from './components/NostrLogin';
+// src/App.jsx
+import { Routes, Route, Link } from 'react-router-dom';
+import WordleGame from './components/WordleGame.jsx';
+import NostrLogin from './components/NostrLogin.jsx';
 
 function App() {
-  const handleLogin = ({ ndk, user, privkey }) => {
-    console.log('Logged in as', user.pubkey);
-    // You can now use NDK instance
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <NostrLogin onLogin={handleLogin} />
+    <div className="p-4">
+      <nav className="mb-4 space-x-4">
+        <Link to="/" className="text-blue-600 underline">Home</Link>
+        <Link to="/wordle" className="text-blue-600 underline">Play Wordle</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<NostrLogin />} />
+        <Route path="/wordle" element={<WordleGame />} />
+      </Routes>
     </div>
   );
 }
