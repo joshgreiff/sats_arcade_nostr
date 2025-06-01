@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 const WORD_LENGTH = 5;
 const MAX_GUESSES = 6;
-const TARGET_WORD = 'satsy'; // placeholder, ideally fetched from server or daily hash
+const TARGET_WORD = 'feast'; // placeholder, ideally fetched from server or daily hash
 
 export default function WordleGame({ pubkey }) {
   const [guesses, setGuesses] = useState([]);
