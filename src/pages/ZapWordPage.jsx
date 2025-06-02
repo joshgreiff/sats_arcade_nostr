@@ -2,7 +2,7 @@
 import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ZapWordGame from '../components/ZapWordGame';
-import { PubkeyContext } from '../context/PubkeyContext';
+import { PubkeyContext } from '../context/PubKeyContext';
 import { Link } from 'react-router-dom';
 
 export default function ZapWordPage() {
