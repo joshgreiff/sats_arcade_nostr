@@ -1,9 +1,11 @@
 // src/components/WordleGame.jsx
 import { useState, useEffect } from 'react';
 import { getDailyWord } from '../utils/getDailyWord';
+import wordList from '../utils/wordList.json';
 
 const WORD_LENGTH = 5;
 const MAX_GUESSES = 6;
+const validWords = wordList.map(w => w.trim().toLowerCase());
 
 export default function WordleGame({ pubkey }) {
   const [targetWord, setTargetWord] = useState(null);
@@ -24,6 +26,10 @@ export default function WordleGame({ pubkey }) {
     if (status !== 'playing') return;
 
     if (e.key === 'Enter') {
+      if (!validWords.includes(currentGuess.toLowerCase())) {
+        alert('Not a valid word!');
+        return;
+      }
       if (currentGuess.length !== WORD_LENGTH) return;
       const newGuesses = [...guesses, currentGuess];
       setGuesses(newGuesses);
