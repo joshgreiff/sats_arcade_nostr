@@ -26,6 +26,8 @@ export default function NostrLogin({ onLogin }) {
       await signer.blockUntilReady();
       const pubkey = signer.pubkey;
       const user = await ndk.getUser({ hexpubkey: pubkey });
+      const pub = user.pubkey;
+      localStorage.setItem('nostr_pubkey', pub);
       setPubkey(pubkey);
       if (onLogin) onLogin({ ndk, signer, user, privkey });
     } catch (err) {
