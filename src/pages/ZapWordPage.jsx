@@ -3,6 +3,7 @@ import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ZapWordGame from '../components/ZapWordGame';
 import { PubkeyContext } from '../context/PubkeyContext';
+import { Link } from 'react-router-dom';
 
 export default function ZapWordPage() {
   const { pubkey } = useContext(PubkeyContext);
@@ -14,5 +15,13 @@ export default function ZapWordPage() {
 
   if (!pubkey) return null;
 
-  return <ZapWordGame pubkey={pubkey} />;
+  return (<>
+  <Link to="/">
+    <button className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 text-sm">
+        ← Home
+    </button>
+    </Link>
+  <ZapWordGame pubkey={pubkey} />
+  </>
+  );
 }

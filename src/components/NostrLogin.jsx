@@ -4,7 +4,7 @@ import { bytesToHex, randomBytes } from '@noble/hashes/utils';
 
 const STORAGE_KEY = 'nostr_privkey';
 
-export default function NostrLogin({ onLogin }) {
+export default function NostrLogin({ onLogin, setPubkey: setGlobalPubkey }) {
   const [pubkey, setPubkey] = useState(null);
   const [existingKey, setExistingKey] = useState('');
 
@@ -27,8 +27,10 @@ export default function NostrLogin({ onLogin }) {
       const pubkey = signer.pubkey;
       const user = await ndk.getUser({ hexpubkey: pubkey });
       const pub = user.pubkey;
+
       localStorage.setItem('nostr_pubkey', pub);
       setPubkey(pubkey);
+      if (setGlobalPubkey) setGlobalPubkey(pub); // this is the context setter
       if (onLogin) onLogin({ ndk, signer, user, privkey });
     } catch (err) {
       console.error('Login failed:', err);
@@ -37,8 +39,10 @@ export default function NostrLogin({ onLogin }) {
   };
 
   const logout = () => {
-    localStorage.removeItem(STORAGE_KEY);
-    setPubkey(null);
+    localStorage.removeItem('nostr_pubkey');
+    localStorage.removeItem('nostr_privkey');
+    if (setGlobalPubkey) setGlobalPubkey(null);
+    window.location.href = '/';
   };
 
   return (
@@ -47,9 +51,6 @@ export default function NostrLogin({ onLogin }) {
         <>
           <p className="mb-2">✅ Logged in as:</p>
           <code className="block break-all text-sm mb-4">{pubkey}</code>
-          <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={logout}>
-            Logout
-          </button>
         </>
       ) : (
         <div className="space-y-4">
