@@ -10,16 +10,26 @@ export default function ZapWordPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!pubkey) navigate('/login');
-  }, [pubkey]);
+    if (pubkey === null) {
+      console.log('Redirecting because pubkey is null');
+      navigate('/login');
+    }
+  }, [pubkey, navigate]);
 
-  if (!pubkey) return null;
+  if (pubkey === undefined) {
+  return <p className="text-center mt-4">Loading ZapWord...</p>;
+  }
+
+  if (pubkey === null) {
+    return null; // let useEffect navigate
+  }
 
   return (<>
   <Link to="/">
     <button className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 text-sm">
         ← Home
     </button>
+
     </Link>
   <ZapWordGame pubkey={pubkey} />
   </>

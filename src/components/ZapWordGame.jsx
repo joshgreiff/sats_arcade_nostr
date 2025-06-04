@@ -1,6 +1,7 @@
 // src/components/ZapWordGame.jsx
 import { useState, useEffect } from 'react';
 import { getDailyWord } from '../utils/getDailyWord';
+import { submitZapwordScore } from '../utils/nostr';
 import wordList from '../utils/wordList.json';
 
 const WORD_LENGTH = 5;
@@ -65,6 +66,7 @@ useEffect(() => {
 
       if (currentGuess === targetWord) {
         setStatus('won');
+        submitZapwordScore({ word: targetWord, tries: guesses.length + 1 });
       } else if (newGuesses.length === MAX_GUESSES) {
         setStatus('lost');
       }
