@@ -1,4 +1,4 @@
-// src/components/WordleGame.jsx
+// src/components/ZapWordGame.jsx
 import { useState, useEffect } from 'react';
 import { getDailyWord } from '../utils/getDailyWord';
 import wordList from '../utils/wordList.json';
@@ -7,20 +7,48 @@ const WORD_LENGTH = 5;
 const MAX_GUESSES = 6;
 const validWords = wordList.map(w => w.trim().toLowerCase());
 
-export default function WordleGame({ pubkey }) {
+
+export default function ZapWordGame({ pubkey }) {
+  const TODAY = new Date().toDateString();
+  const STORAGE_KEY = `zapwordState:${pubkey}:${TODAY}`;
   const [targetWord, setTargetWord] = useState(null);
   const [guesses, setGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState('');
   const [status, setStatus] = useState('loading'); // 'loading', 'playing', 'won', 'lost'
 
-  useEffect(() => {
-    async function loadWord() {
-      const word = await getDailyWord();
-      setTargetWord(word.toLowerCase());
+useEffect(() => {
+  async function loadWord() {
+    const word = await getDailyWord();
+    setTargetWord(word.toLowerCase());
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        setGuesses(data.guesses || []);
+        setCurrentGuess(data.currentGuess || '');
+        setStatus(data.status || 'playing');
+      } catch (e) {
+        console.warn('Failed to load saved game state', e);
+        setStatus('playing');
+      }
+    } else {
       setStatus('playing');
     }
-    loadWord();
-  }, []);
+  }
+  loadWord();
+}, []);
+
+useEffect(() => {
+  if (status !== 'loading' && targetWord) {
+    const data = {
+      guesses,
+      currentGuess,
+      status,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+}, [guesses, currentGuess, status, targetWord]);
 
   const handleKeyPress = (e) => {
     if (status !== 'playing') return;
@@ -56,14 +84,14 @@ export default function WordleGame({ pubkey }) {
     const correct = targetWord[index] === letter;
     const present = !correct && targetWord.includes(letter);
     const classes = correct
-      ? 'bg-green-500'
+      ? 'bg-[#F7931A]'
       : present
-      ? 'bg-yellow-500'
-      : 'bg-gray-500';
+      ? 'bg-[#FFDD57]' 
+      : 'bg-[#1A1A1A]';
     return (
       <div
-        key={index}
-        className={`w-12 h-12 m-1 flex items-center justify-center text-white font-bold text-xl ${classes}`}
+      key={index}
+      className={`w-12 h-12 m-1 flex items-center justify-center text-white font-bold text-xl ${classes}`}
       >
         {letter.toUpperCase()}
       </div>
@@ -100,6 +128,23 @@ export default function WordleGame({ pubkey }) {
           The word was: {targetWord.toUpperCase()}
         </p>
       )}
+      <div className="mt-6 max-w-md mx-auto">
+  <h3 className="text-center font-semibold mb-2">Color Key</h3>
+  <div className="flex justify-center space-x-4">
+    <div className="flex items-center space-x-2">
+      <div className="w-6 h-6 bg-[#F7931A]"></div>
+      <span className="text-sm">Correct letter & position</span>
+    </div>
+    <div className="flex items-center space-x-2">
+      <div className="w-6 h-6 bg-[#FFDD57] border border-gray-400"></div>
+      <span className="text-sm">Correct letter, wrong position</span>
+    </div>
+    <div className="flex items-center space-x-2">
+      <div className="w-6 h-6 bg-[#1A1A1A] border border-gray-400"></div>
+      <span className="text-sm">Letter not in word</span>
+    </div>
+    </div>
+  </div>
     </div>
   );
 }
