@@ -18,7 +18,9 @@ if (privkey && pubkey) {
   ndk.signer = signer;
 }
 
-await ndk.connect();
+(async () => {
+  await ndk.connect();
+})();
 
 export async function submitZapwordScore({ word, tries }) {
   if (!privkey || !pubkey) {
