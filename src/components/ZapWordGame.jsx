@@ -128,9 +128,40 @@ export default function ZapWordGame({ pubkey }) {
             ref={inputRef}
             type="text"
             autoFocus
-            onKeyDown={handleKeyPress}
-            value=""
-            style={{ position: 'absolute', opacity: 0, height: 0, width: 0 }}
+            value={currentGuess}
+            onChange={(e) => {
+              const val = e.target.value.toLowerCase();
+              if (val.length > WORD_LENGTH) return;
+              if (/^[a-z]*$/.test(val)) {
+                setCurrentGuess(val);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                if (!validWords.includes(currentGuess.toLowerCase())) {
+                  alert('Not a valid word!');
+                  return;
+                }
+                if (currentGuess.length !== WORD_LENGTH) return;
+                const newGuesses = [...guesses, currentGuess];
+                setGuesses(newGuesses);
+                setCurrentGuess('');
+
+                if (currentGuess === targetWord) {
+                  setStatus('won');
+                  submitZapwordScore({ word: targetWord, tries: guesses.length + 1 });
+                } else if (newGuesses.length === MAX_GUESSES) {
+                  setStatus('lost');
+                }
+              }
+            }}
+            style={{
+              position: 'absolute',
+              opacity: 0.01,
+              height: 1,
+              width: 1,
+              zIndex: -1,
+            }}
           />
         </>
       )}
